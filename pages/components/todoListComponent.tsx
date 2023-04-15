@@ -25,9 +25,17 @@ const TodoList = () => {
         setItems([...items, newItem]);
     }
 
-    useEffect(() => {
-        console.log("updating" , items); 
-    }, [items]);
+    const handleDelete = (id: number): void => {
+        let removeIdx: number = items.findIndex((item) => item.id === id);
+        let newItems = Array<TodoItems>();
+        items.map((item, index) => {
+            if (index !== removeIdx) {
+                newItems.push(item);
+            }
+        });
+        setItems(newItems);
+        console.log("delete");
+    }
 
     return(
         <div>
@@ -35,13 +43,7 @@ const TodoList = () => {
                 <input type="text" autoFocus name="itemText" placeholder="Insert your new item here" ref={textRef}></input>
                 <button type="button" className="addButton" onClick={() => handleAdd()}>Add</button>
             </div>
-            {
-                items.map((item) =>{
-                    return <div className="listItem" key={item.id.toString()}>
-                                <li id={item.id.toString()}>{item.text}</li><button type="button" className="deleteButton">X</button>
-                            </div>
-                })
-            }
+            <ToDoItems todoItems={items} handleDelete={handleDelete}/>
         </div>
     ) 
 }
