@@ -1,3 +1,4 @@
+import axios from "axios";
 import { text } from "node:stream/consumers";
 import React, { useEffect } from "react";
 import { useRef, useState } from "react";
@@ -7,6 +8,19 @@ import ToDoItems from "./todoItems";
 const TodoList = () => {
     const [items, setItems] = useState(new Array<TodoItems>);
     const textRef = useRef<HTMLInputElement | null>(null);
+
+    useEffect(() => {
+        axios.get("https://localhost:7226/TodoItems/getAll").then(
+            (response) => {
+                let fetchedItems = new Array<TodoItems>();
+                for(let i = 0; i < response.data.length; i++){
+                    fetchedItems.push(response.data[i]);
+                }
+                console.log("items", fetchedItems);
+                setItems(fetchedItems);
+            }
+        ).catch(rejected => Promise.reject("Error fetching data"));
+    }, []);
 
     const getNextItem = (): number => {
         return (items.length === 0) ? 1 : (items[items.length - 1].id + 1);
@@ -19,7 +33,7 @@ const TodoList = () => {
         }
         let newItem: TodoItems = {
             id: getNextItem(),
-            text: newItemText,
+            name: newItemText,
             isCompleted: false
         };
         setItems([...items, newItem]);
@@ -34,7 +48,6 @@ const TodoList = () => {
             }
         });
         setItems(newItems);
-        console.log("delete");
     }
 
     return(
